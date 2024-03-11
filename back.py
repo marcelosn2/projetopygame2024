@@ -5,6 +5,24 @@ W = 640
 H = 480
 
 
+class caixa:
+    def __init__(self):
+        self.vel = 2
+        self.caixa = pygame.transform.scale(
+            pygame.image.load("assets/img/caixa,png"), (20, 10)
+        )
+        self.pos = (random.randint(0, W), -30)
+
+    def events(self):
+        if jogo.recebe_eventos() == True:
+            self.pos[1] += self.vel
+            return True
+
+    def desenha(self):
+        for i in caixas
+        self.window.blit(self.caixa, self.pos)
+
+
 class jogo:
     def __init__(self):
         pygame.init()
@@ -14,31 +32,26 @@ class jogo:
         self.fonte = pygame.font.Font("assets/font/PressStart2P.ttf", 20)
         return self
 
-    def recebe_eventos(self, asset, estate):
+    def recebe_eventos(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return False
         return True
 
-    def game_loop(self, window, asset, estate):
-        x = self.recebe_eventos(asset, estate)
+    def desenha(self):
+        self.window.fill(0, 0, 0)
+
+    def game_loop(self):
+        x = jogo.recebe_eventos(self)
         t0 = -1
-        t = 1
+        self.t = 1
         while x:
             t1 = pygame.time.get_ticks()
             if t0 >= 0:
-                t = t1 - t0
+                self.t = t1 - t0
             t0 = t1
-            asset["fps"] = 1000 / t
-            estate["caixa"] += t * estate["vel"]
-            if estate["Jx"] <= 0:
-                estate["Jx"] = 0
-            elif estate["Jx"] >= W - 50:
-                estate["Jx"] = W - 50
-            for i in range(len(asset["astr"][1][0])):
-                if asset["astr"][1][1][i] + 20 >= H:
-                    asset["astr"][1][1][i] = 0
-                    asset["astr"][1][0][i] = random.randint(0, W)
-            self.desenha(window, asset, estate)
-            x = self.recebe_eventos(asset, estate)
+
+            self.desenha()
+            caixa.desenha()
+            x = self.recebe_eventos()
         return x
