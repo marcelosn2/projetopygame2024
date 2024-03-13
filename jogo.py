@@ -1,9 +1,7 @@
 import back
 import pygame
 
-pygame.init()
-jogo = back.Jogo(640, 480)
-jogo.teste()
+jogo = back.Jogo(1200, 700)
 x = True
 while x:
     x = jogo.game_loop()
