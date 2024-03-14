@@ -11,10 +11,8 @@ class caixa:
         self.fonte = pygame.font.Font("assets/font/PressStart2P.ttf", 20)
         self.pal = self.get_word("1")
         self.pos = [random.randint(0, 900), -100]
-        # self.ret = self.pal.get_rect(center=(self.pos[0] + 150, self.pos[1] + 40))
         self.text = ""
         self.point = 0
-        # self.retR = self.R.get_rect(center=(self.pos[0] + 150, self.pos[1] + 140))
 
     def desenha(self, img):
         caixa = pygame.image.load(img)
@@ -30,18 +28,25 @@ class caixa:
 
     def update(self):
         self.pos[1] += self.vel
-        # if self.C.pos[1] > self.height + 10:
+        self.point = 0
+
         if self.pos[1] >= 800:
             if self.pal != self.text:
                 print("entrou")
                 self.vel += 0.1
             else:
-                self.point += 1
+                self.vel = 1
             self.pos[0] = random.randint(0, 900)
             self.pal = self.get_word("1")
             self.text = ""
             self.pos[1] = -100
             print(self.vel)
+        if len(self.pal) == len(self.text):
+            self.vel = 100
+            if self.pal == self.text:
+                self.point = 1
+
+        return self.point
 
 
 class Jogo:
@@ -51,7 +56,8 @@ class Jogo:
         self.width = width
         self.height = height
         self.window = pygame.display.set_mode((self.width, self.height))
-        self.vidas = 3
+        self.vida = 3
+        self.pontos = 0
         self.C = caixa()
         pygame.display.set_caption("GravWorddle")
 
@@ -87,10 +93,14 @@ class Jogo:
             (self.C.pos[0] + 110, self.C.pos[1] + 100),
         )
         self.window.blit(
-            (self.C.fonte.render(str(self.C.point), True, (255, 255, 255))),
+            (self.C.fonte.render(str(self.pontos), True, (255, 255, 255))),
             (1100, 10),
         )
+        # self.window.blit(self.C.fonte.render("1", True, (255, 255, 255))(10, 10))
         pygame.display.flip()
+
+    def sum_point(self, point):
+        self.pontos += point
 
     def game_loop(self):
         x = Jogo.recebe_eventos
@@ -100,6 +110,7 @@ class Jogo:
         while x:
             caixa.update(self.C)
             Jogo.desenha(self)
+            self.sum_point(self.C.point)
             # caixa.desenha()
             x = Jogo.recebe_eventos(self)
             # caixa.update(self.C)
