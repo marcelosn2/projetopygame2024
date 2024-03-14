@@ -9,11 +9,11 @@ class caixa:
         self.height = 150
         self.vel = 1
         self.fonte = pygame.font.Font("assets/font/PressStart2P.ttf", 20)
-        self.pal = self.fonte.render(self.get_word("1"), True, (0, 0, 0))
+        self.pal = self.get_word("1")
         self.pos = [random.randint(0, 900), -100]
-        self.ret = self.pal.get_rect(center=(self.pos[0] + 150, self.pos[1] + 40))
+        # self.ret = self.pal.get_rect(center=(self.pos[0] + 150, self.pos[1] + 40))
         self.text = ""
-        self.R = self.fonte.render(self.text, True, (255, 255, 255))
+        self.point = 0
         # self.retR = self.R.get_rect(center=(self.pos[0] + 150, self.pos[1] + 140))
 
     def desenha(self, img):
@@ -29,14 +29,16 @@ class caixa:
         return contents[level][number]
 
     def update(self):
-        r = self.fonte.render(self.text, True, (255, 255, 255))
         self.pos[1] += self.vel
         # if self.C.pos[1] > self.height + 10:
         if self.pos[1] >= 800:
-            if self.pal != r:
+            if self.pal != self.text:
+                print("entrou")
                 self.vel += 0.1
+            else:
+                self.point += 1
             self.pos[0] = random.randint(0, 900)
-            self.pal = self.fonte.render(self.get_word("1"), True, (0, 0, 0))
+            self.pal = self.get_word("1")
             self.text = ""
             self.pos[1] = -100
             print(self.vel)
@@ -51,12 +53,9 @@ class Jogo:
         self.window = pygame.display.set_mode((self.width, self.height))
         self.vidas = 3
         self.C = caixa()
-        #  self.retR = self.text.get_rect(center=(self.pos[0] + 150, self.pos[1] + 100))
-
         pygame.display.set_caption("GravWorddle")
 
     def recebe_eventos(self):
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return False
@@ -74,14 +73,23 @@ class Jogo:
 
     def desenha(self):
         self.window.fill((255, 0, 0))
-        R = self.C.fonte.render(self.C.text, True, (255, 255, 255))
         self.window.blit(
             self.C.desenha("assets/imgs/img.png"),
             (self.C.pos[0], self.C.pos[1]),
         )
-        self.window.blit(self.C.pal, (self.C.pos[0] + 100, self.C.pos[1] + 30))
+        self.window.blit(
+            self.C.fonte.render((self.C.pal), True, (0, 0, 0)),
+            (self.C.pos[0] + 100, self.C.pos[1] + 30),
+        )
         # self.window.blit(self.R, self.C.retR)
-        self.window.blit(R, (self.C.pos[0] + 110, self.C.pos[1] + 100))
+        self.window.blit(
+            (self.C.fonte.render(self.C.text, True, (255, 255, 255))),
+            (self.C.pos[0] + 110, self.C.pos[1] + 100),
+        )
+        self.window.blit(
+            (self.C.fonte.render(str(self.C.point), True, (255, 255, 255))),
+            (1100, 10),
+        )
         pygame.display.flip()
 
     def game_loop(self):
