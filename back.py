@@ -14,6 +14,8 @@ class caixa:
         self.pos = [random.randint(0, 900), -100]
         self.text = ""
         self.point = 0
+        self.win = pygame.mixer.Sound("assets\snd\pew.wav")
+        self.boom = pygame.mixer.Sound("assets\snd\expl3.wav")
 
     def desenha(self, img):
         caixa = pygame.image.load(img)
@@ -37,6 +39,7 @@ class caixa:
                 self.vel += 1
                 self.point = -10
                 jogo.vidas -= 1
+                self.boom.play()
             else:
                 self.vel = 1
             if x > 500:
@@ -53,6 +56,7 @@ class caixa:
             if self.pal == self.text:
                 self.point = 1
                 self.vel = 10
+                self.win.play()
         # if self.vida==0:
 
         return self.point
