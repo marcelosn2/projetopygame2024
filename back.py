@@ -71,6 +71,7 @@ class Jogo:
         self.window = pygame.display.set_mode((self.width, self.height))
         self.pontos = 0
         self.vidas = 3
+        self.tela = 1
         self.C = caixa()
         pygame.display.set_caption("GravWorddle")
 
@@ -88,6 +89,7 @@ class Jogo:
             elif event.type == pygame.KEYDOWN:
                 self.C.text += str(event.unicode)
         if self.vidas <= 0:
+            self.tela = 0
             return False
         return True
 
@@ -131,3 +133,36 @@ class Jogo:
             x = Jogo.recebe_eventos(self)
             # caixa.update(self.C)
         return x
+
+
+class telafinal:
+    def __init__(self, width, height):
+        pygame.init()
+        self.width = width
+        self.height = height
+        self.window = pygame.display.set_mode((self.width, self.height))
+
+    def telafinal(self, jogo, n):
+
+        if n != 1:
+            jogo.window.fill((0, 0, 0))
+            jogo.window.blit(
+                (jogo.C.FONTE.render(str(jogo.pontos), True, (255, 255, 255))),
+                (self.width / 2, self.height / 2),
+            )
+            jogo.window.blit(
+                (
+                    jogo.C.FONTE.render(
+                        "press space to go again",
+                        False,
+                        (255, 255, 255),
+                    )
+                ),
+                ((self.width / 2, (self.height / 2) + 20)),
+            )
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return False
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                    return 1
+        return True
