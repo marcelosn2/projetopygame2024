@@ -1,6 +1,8 @@
+import csv
 import pygame
 import random
 import json
+import csv
 
 
 class caixa:
@@ -73,12 +75,15 @@ class Jogo:
         self.vidas = 3
         self.tela = 1
         self.C = caixa()
+        self.recebe_eventos = 1
         pygame.display.set_caption("GravWorddle")
 
     def recebe_eventos(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                return False
+                self.tela = 0
+                self.recebe_eventos = 0
+                return 0
             elif (
                 event.type == pygame.KEYDOWN
                 and event.key == pygame.K_BACKSPACE
@@ -90,8 +95,10 @@ class Jogo:
                 self.C.text += str(event.unicode)
         if self.vidas <= 0:
             self.tela = 0
-            return False
-        return True
+            self.recebe_eventos = 2
+            return 2
+        self.recebe_eventos = 1
+        return 1
 
     def desenha(self):
         self.window.fill((255, 0, 0))
@@ -120,11 +127,13 @@ class Jogo:
         self.pontos += point
 
     def game_loop(self):
+        print("game loop")
         x = Jogo.recebe_eventos
         self.clock = pygame.time.Clock()
         self.clock.tick(60)
 
-        while x:
+        while self.recebe_eventos == 1:
+            # print("while")
             caixa.update(self.C, self.pontos, self)
             self.heart = chr(9829) * self.vidas
             Jogo.desenha(self)
@@ -136,33 +145,61 @@ class Jogo:
 
 
 class telafinal:
-    def __init__(self, width, height):
+    def __init__(self, jogo, width, height):
         pygame.init()
         self.width = width
         self.height = height
-        self.window = pygame.display.set_mode((self.width, self.height))
+        self.jogo = jogo
+        self.event = 2
 
-    def telafinal(self, jogo, n):
-
-        if n != 1:
-            jogo.window.fill((0, 0, 0))
-            jogo.window.blit(
-                (jogo.C.FONTE.render(str(jogo.pontos), True, (255, 255, 255))),
+    def telafinal(self, x):
+        while x == 2:
+            self.jogo.window.fill((0, 0, 0))
+            self.jogo.window.blit(
+                (
+                    self.jogo.C.FONTE.render(
+                        str(self.jogo.pontos), True, (255, 255, 255)
+                    )
+                ),
                 (self.width / 2, self.height / 2),
             )
-            jogo.window.blit(
+            self.jogo.window.blit(
                 (
-                    jogo.C.FONTE.render(
+                    self.jogo.C.fonte.render(
                         "press space to go again",
                         False,
                         (255, 255, 255),
                     )
                 ),
-                ((self.width / 2, (self.height / 2) + 20)),
+                ((200, (self.height / 2) + 100)),
             )
+            pygame.display.update()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    return False
+                    self.event = 0
+                    x = 0
+                    return self.event
                 elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                    return 1
-        return True
+                    self.jogo.game_loop()
+                    self.jogo.vidas = 3
+                    self.event = 1
+                    x = 1
+                    return self.event
+            self.event = 2
+        return self.event
+
+    def hiscore(self):
+        f = open("scores.txt", "rb")
+        reader = csv.reader(f)
+        scores = (row[-1] for row in reader)
+
+        file = f.readlines()
+        best = int(file[0])
+        for i in file:
+            if i < self.jogo.pontos:
+                f.close()  # closes/saves the file
+                file = open("scores.txt", "w")  # reopens it in write mode
+                file.write(str(self.jogo.pontos)[i])  # writes the best score
+                file.close()  # closes/saves the file
+                return self.jogo.pontos
+            return best
